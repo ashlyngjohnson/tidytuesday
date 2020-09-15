@@ -1,0 +1,27 @@
+---
+title: 'Tidy Tuesday: 9/15/2020 - US Spending on Kids'
+author: "Ashlyn Johnson"
+date: "9/15/2020"
+output: github_document
+---
+
+## Packages
+```{r packages, message = FALSE}
+library(tidyverse)
+library(tidytuesdayR)
+```
+
+## Data   
+This week's data comes from the Urban Institute and we will use Joshua Rosenberg's package, `tidykids` to access the data. The dataset provides information on public spending on children from 1997 - 2016. The `tidykids` package contains a cleaned and tidy version of the data. 
+
+```{r importing data, message = FALSE}
+dat <- tidytuesdayR::tt_load(2020, week = 38)
+kids <- dat$kids
+```
+
+**inf_adj** is the value adjusted for inflation and **inf_adj_perchild** is the value adjusted for inflation per child.   
+
+### Initial Plots to Check Out the Data
+
+
+
