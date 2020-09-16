@@ -10,6 +10,10 @@ library(tidyverse)
 library(tidytuesdayR)
 library(viridis)
 library(urbnmapr)
+library(gganimate)
+library(transformr)
+library(ggthemes)
+library(gifski)
 ```
 
 ## Data
@@ -43,16 +47,20 @@ ggplot() + geom_area(data = kids %>% filter(variable == "PK12ed"), aes(x = year,
 Looking at this initial plot, I am curious to see this data in more
 concise way. Can I plot this data onto a map of the US?
 
+### US Map Based Plots
+
+This is a static plot for the year 2000.
+
 ``` r
 states_sf <- get_urbn_map("states", sf = TRUE)
 
 
-kids_spatial <- left_join(states_sf,
+kids_spatial_2000 <- full_join(states_sf,
                           kids %>% 
-                            filter(year == 2000, variable == "PK12ed"),
+                            filter(variable == "PK12ed", year == 2000),
                           by = "state_name")
 
-kids_spatial %>% 
+kids_spatial_2000 %>% 
 ggplot() +
   geom_sf(mapping = aes(fill = inf_adj_perchild),
           color = "black", size = 0.25) +
@@ -60,21 +68,66 @@ ggplot() +
    geom_sf_text(data = get_urbn_labels(map = "states", sf = TRUE), 
                 aes(label = state_abbv), color = "black", 
             size = 5) + 
-  labs(fill = "thousands of dollars",
-        title = "Public Spending on Elementary and Secondary Schools", 
+  labs(fill = "thousand dollars",
+       title = "Public Spending on Elementary and Secondary Schools: 2000",
        subtitle = "in thousands of dollars per child, adjusted for inflation") +
-  theme(plot.title = element_text(size = 30, face = "bold"),
-        plot.subtitle = element_text(size = 20),
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), 
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
-        panel.grid=element_blank(),
+  theme_map() + 
+  theme(plot.title = element_text(size = 20, face = "bold"),
+        plot.subtitle = element_text(size = 16),
+        legend.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 10),
+        legend.key.size = unit(20, "pt"),
+        legend.position = "top",
         panel.background = element_rect(fill = 'gray', colour = 'gray'),
         plot.background = element_rect(fill = 'gray', colour = 'gray'), 
         legend.background = element_rect(fill = "gray", color = "gray"))
 ```
 
 ![](200915_tidytuesday_files/figure-gfm/fig2-1.png)<!-- -->
+
+This is an animated plots to show all of the years.
+
+``` r
+kids_spatial <- full_join(states_sf,
+                          kids %>% 
+                            filter(variable == "PK12ed"),
+                          by = "state_name")
+
+plot <-kids_spatial %>% 
+ggplot() +
+  geom_sf(mapping = aes(fill = inf_adj_perchild),
+          color = "black", size = 0.25) +
+  scale_fill_viridis(discrete = FALSE) +
+   geom_sf_text(data = get_urbn_labels(map = "states", sf = TRUE), 
+                aes(label = state_abbv), color = "black", 
+            size = 15) + 
+  labs(fill = "thousand dollars",
+       subtitle = "in thousands of dollars per child, adjusted for inflation") +
+  theme_map() + 
+  theme(plot.title = element_text(size = 50, face = "bold"),
+        plot.subtitle = element_text(size = 40),
+        legend.title = element_text(size = 30, face = "bold"),
+        legend.text = element_text(size = 25),
+        legend.key.size = unit(60, "pt"),
+        legend.position = "top",
+        panel.background = element_rect(fill = 'gray', colour = 'gray'),
+        plot.background = element_rect(fill = 'gray', colour = 'gray'), 
+        legend.background = element_rect(fill = "gray", color = "gray"))
+
+
+ plot_animated <- plot +
+  ggtitle("Public Spending on Elementary and Secondary Schools: {frame_time}") +
+  transition_time(as.integer(year)) +
+  ease_aes("linear") +
+  enter_fade() +
+  exit_fade()
+  
+ 
+animate(plot_animated, renderer = gifski_renderer(), width = 1000, height = 666, res = 35)
+```
+
+![](200915_tidytuesday_files/figure-gfm/animated%20plot-1.gif)<!-- -->
+
+``` r
+anim_save("kids_school_spending.gif")
+```
