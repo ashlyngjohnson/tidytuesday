@@ -8,6 +8,7 @@ Ashlyn Johnson
 ``` r
 library(tidyverse)
 library(tidytuesdayR)
+library(viridis)
 ```
 
 ## Data
@@ -19,12 +20,6 @@ information on public spending on children from 1997 - 2016. The
 
 ``` r
 dat <- tidytuesdayR::tt_load(2020, week = 38)
-```
-
-    ## 
-    ##  Downloading file 1 of 1: `kids.csv`
-
-``` r
 kids <- dat$kids
 ```
 
@@ -32,3 +27,13 @@ kids <- dat$kids
 **inf\_adj\_perchild** is the value adjusted for inflation per child.
 
 ### Initial Plots to Check Out the Data
+
+``` r
+ggplot() + geom_area(data = kids %>% filter(variable == "PK12ed"), aes(x = year, 
+    y = inf_adj_perchild, fill = state), show.legend = FALSE) + scale_fill_viridis(discrete = TRUE) + 
+    theme_classic() + labs(title = "Public Spending on Elementary & Secondary Schools Per Child by State", 
+    subtitle = "in $1000s", xlab = "Year", ylab = "$1000s of Dollars per Child, Adjusted for Inflation") + 
+    facet_wrap(~state, ncol = 5)
+```
+
+![](200915_tidytuesday_files/figure-gfm/fig1-1.png)<!-- -->
