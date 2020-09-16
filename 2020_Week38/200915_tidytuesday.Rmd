@@ -45,7 +45,7 @@ ggplot() +
 ```
 
 
-Looking at this initial plot, I am curious to see this data in more concise way. Can I plot this data onto a map of the US?
+Looking at this initial plot, I am curious to see this data in a more concise way. Can I plot this data onto a map of the US?
 
 ### US Map Based Plots
 
