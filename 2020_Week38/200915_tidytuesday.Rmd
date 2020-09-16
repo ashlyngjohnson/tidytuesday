@@ -68,10 +68,12 @@ ggplot() +
             size = 5) + 
   labs(fill = "thousand dollars",
        title = "Public Spending on Elementary and Secondary Schools: 2000",
-       subtitle = "in thousands of dollars per child, adjusted for inflation") +
+       subtitle = "in thousands of dollars per child, adjusted for inflation", 
+       caption = "Source: Urban Insitute \n Viz: @ashgjoh") +
   theme_map() + 
   theme(plot.title = element_text(size = 20, face = "bold"),
         plot.subtitle = element_text(size = 16),
+        plot.caption = element_text(size = 16),
         legend.title = element_text(size = 14, face = "bold"),
         legend.text = element_text(size = 10),
         legend.key.size = unit(20, "pt"),
@@ -100,10 +102,12 @@ ggplot() +
                 aes(label = state_abbv), color = "black", 
             size = 15) + 
   labs(fill = "thousand dollars",
-       subtitle = "in thousands of dollars per child, adjusted for inflation") +
+       subtitle = "in thousands of dollars per child, adjusted for inflation",
+        caption = "Source: Urban Insitute \n Viz: @ashgjoh") +
   theme_map() + 
   theme(plot.title = element_text(size = 50, face = "bold"),
         plot.subtitle = element_text(size = 40),
+        plot.caption = element_text(size = 40),
         legend.title = element_text(size = 30, face = "bold"),
         legend.text = element_text(size = 25),
         legend.key.size = unit(60, "pt"),
@@ -124,5 +128,44 @@ ggplot() +
 animate(plot_animated, renderer = gifski_renderer(), width = 1000, height = 666, res = 35)
 anim_save("kids_school_spending.gif")
 ```
+One thing that I'm noticing is that DC seems to overall spend far more money per child than the other states. This vast difference may make it more difficult to notice differences in spending between the other states. So for this next plot, I'm going to take DC out of the data. 
 
+```{r animated plot without DC}
+kids_spatial_noDC <- kids_spatial %>% 
+  filter(state_name != "District of Columbia")
+
+plot_noDC <-kids_spatial_noDC %>% 
+ggplot() +
+  geom_sf(mapping = aes(fill = inf_adj_perchild),
+          color = "black", size = 0.25) +
+  scale_fill_viridis(discrete = FALSE) +
+   geom_sf_text(data = get_urbn_labels(map = "states", sf = TRUE), 
+                aes(label = state_abbv), color = "black", 
+            size = 15) + 
+  labs(fill = "thousand dollars",
+       subtitle = "in thousands of dollars per child, adjusted for inflation \n (does not include District of Columbia)",
+        caption = "Source: Urban Insitute \n Viz: @ashgjoh") +
+  theme_map() + 
+  theme(plot.title = element_text(size = 50, face = "bold"),
+        plot.subtitle = element_text(size = 40),
+        plot.caption = element_text(size = 40),
+        legend.title = element_text(size = 30, face = "bold"),
+        legend.text = element_text(size = 25),
+        legend.key.size = unit(60, "pt"),
+        legend.position = "top",
+        panel.background = element_rect(fill = 'gray', colour = 'gray'),
+        plot.background = element_rect(fill = 'gray', colour = 'gray'), 
+        legend.background = element_rect(fill = "gray", color = "gray"))
+
+
+ plot_animated_noDC <- plot_noDC +
+  ggtitle("Public Spending on Elementary and Secondary Schools: {frame_time}") +
+  transition_time(as.integer(year)) +
+  ease_aes("linear") +
+  enter_fade() +
+  exit_fade()
+ 
+ animate(plot_animated_noDC, renderer = gifski_renderer(), width = 1000, height = 666, res = 35)
+anim_save("kids_school_spending_noDC.gif")
+```
 
