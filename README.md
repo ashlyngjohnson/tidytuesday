@@ -1,5 +1,5 @@
 # tidytuesday
-Tidy Tuesday is a weekly data project in R. Here are my attempts at wrangling and visualizing the various datasets. 
+Tidy Tuesday is a weekly data project in R. Here are my attempts at wrangling and visualizing the various datasets. To find the code for each plot, see each week's folder for the markdown document. There you will see all code for any plots that I generated with that dataset. 
 
 ## 2020
 
