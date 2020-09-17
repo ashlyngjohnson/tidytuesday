@@ -17,13 +17,21 @@ library(ggthemes)
 library(gifski)
 ```
 
+## Session Information
+```{r session information, echo = FALSE}
+sessionInfo()
+```
+
+
 ## Data   
 This week's data comes from the Urban Institute and we will use Joshua Rosenberg's package, `tidykids` to access the data. The dataset provides information on public spending on children from 1997 - 2016. The `tidykids` package contains a cleaned and tidy version of the data. 
 
 ```{r importing data, results = 'hide', message = FALSE, error = FALSE, warning = FALSE}
+
+# using the tidytuesdayR package to load the data
 dat <- tidytuesdayR::tt_load(2020, week = 38)
 kids <- dat$kids %>% 
-  rename(state_name = state)
+  rename(state_name = state) # renamed the state variable to make it easier to use with urbnmapr later on
 ```
 
 **inf_adj** is the value adjusted for inflation and **inf_adj_perchild** is the value adjusted for inflation per child.   
@@ -34,7 +42,7 @@ kids <- dat$kids %>%
 ggplot() +
   geom_area(
     data = kids %>%
-      filter(variable == "PK12ed"),
+      filter(variable == "PK12ed"), # filtered for only the PK12ed variable
     aes(x = year, y = inf_adj_perchild, fill = state_name),
     show.legend = FALSE
   ) +
@@ -52,10 +60,11 @@ Looking at this initial plot, I am curious to see this data in a more concise wa
 This is a static plot for the year 2000. 
 
 ```{r fig2, fig.width = 12, fig.height = 8}
-states_sf <- get_urbn_map("states", sf = TRUE)
+states_sf <- get_urbn_map("states", sf = TRUE) # using the urbnmapr function to get a dataframe with US state information
 
 
-kids_spatial_2000 <- full_join(states_sf,
+
+kids_spatial_2000 <- full_join(states_sf, # joining the kids data with this state/spatial data  
   kids %>%
     filter(variable == "PK12ed", year == 2000),
   by = "state_name"
@@ -99,13 +108,13 @@ This is an animated plots to show all of the years.
 
 ```{r animated plot}
 
-kids_spatial <- full_join(states_sf,
+kids_spatial <- full_join(states_sf, # joining the kids data with this state/spatial data  
   kids %>%
     filter(variable == "PK12ed"),
   by = "state_name"
 )
 
-plot <- kids_spatial %>%
+plot <- kids_spatial %>% # creating initial plot
   ggplot() +
   geom_sf(
     mapping = aes(fill = inf_adj_perchild),
@@ -136,8 +145,9 @@ plot <- kids_spatial %>%
     legend.background = element_rect(fill = "gray", color = "gray")
   )
 
+# using gganimate to animate the plot to display data across time
 
-plot_animated <- plot +
+plot_animated <- plot + 
   ggtitle("Public Spending on Elementary and Secondary Schools: {frame_time}") +
   transition_time(as.integer(year)) +
   ease_aes("linear") +
@@ -145,16 +155,16 @@ plot_animated <- plot +
   exit_fade()
 
 
-animate(plot_animated, renderer = gifski_renderer(), width = 1000, height = 666, res = 35)
-anim_save("kids_school_spending.gif")
+animate(plot_animated, renderer = gifski_renderer(), width = 1000, height = 666, res = 35) # rendering animation
+anim_save("kids_school_spending.gif") # saving as GIF
 ```
 One thing that I'm noticing is that DC seems to overall spend far more money per child than the other states. This vast difference may make it more difficult to notice differences in spending between the other states. So for this next plot, I'm going to take DC out of the data. 
 
 ```{r animated plot without DC}
-kids_spatial_noDC <- kids_spatial %>%
-  filter(state_name != "District of Columbia")
+kids_spatial_noDC <- kids_spatial %>% # joining the kids data with this state/spatial data 
+  filter(state_name != "District of Columbia") # filtering out DC data
 
-plot_noDC <- kids_spatial_noDC %>%
+plot_noDC <- kids_spatial_noDC %>% # initial plot
   ggplot() +
   geom_sf(
     mapping = aes(fill = inf_adj_perchild),
@@ -185,6 +195,7 @@ plot_noDC <- kids_spatial_noDC %>%
     legend.background = element_rect(fill = "gray", color = "gray")
   )
 
+# using gganimate to animate the plot to display data across time
 
 plot_animated_noDC <- plot_noDC +
   ggtitle("Public Spending on Elementary and Secondary Schools: {frame_time}") +
@@ -193,7 +204,7 @@ plot_animated_noDC <- plot_noDC +
   enter_fade() +
   exit_fade()
 
-animate(plot_animated_noDC, renderer = gifski_renderer(), width = 1000, height = 666, res = 35)
-anim_save("kids_school_spending_noDC.gif")
+animate(plot_animated_noDC, renderer = gifski_renderer(), width = 1000, height = 666, res = 35) # rendering animation
+anim_save("kids_school_spending_noDC.gif") # saving as GIF
 ```
 
