@@ -14,6 +14,10 @@ library(RColorBrewer)
 
 
 ## Session Information
+```{r}
+sessionInfo()
+```
+
 
 ## Data   
 
