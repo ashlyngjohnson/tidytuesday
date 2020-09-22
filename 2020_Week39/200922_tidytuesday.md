@@ -8,7 +8,7 @@ Ashlyn Johnson
 ``` r
 library(tidyverse)
 library(tidytuesdayR)
-library(viridis)
+library(RColorBrewer)
 ```
 
 ## Session Information
@@ -24,79 +24,72 @@ tuesday](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/20
 
 ``` r
 tuesdata <- tidytuesdayR::tt_load(2020, week = 39)
+## --- Compiling #TidyTuesday Information for 2020-09-22 ----
+## --- There are 3 files available ---
+## --- Starting Download ---
+## 
+##  Downloading file 1 of 3: `peaks.csv`
+##  Downloading file 2 of 3: `members.csv`
+##  Downloading file 3 of 3: `expeditions.csv`
+## --- Download complete ---
+members <- tuesdata$members
 ```
-
-    ## --- Compiling #TidyTuesday Information for 2020-09-22 ----
-
-    ## --- There are 3 files available ---
-
-    ## --- Starting Download ---
-
-    ## 
-    ##  Downloading file 1 of 3: `peaks.csv`
-    ##  Downloading file 2 of 3: `members.csv`
-    ##  Downloading file 3 of 3: `expeditions.csv`
-
-    ## --- Download complete ---
-
-``` r
-peaks <- tuesdata$peaks
-members <-  tuesdata$members
-expeditions <- tuesdata$expeditions
-```
-
-## Exploration of Data
 
 There are so many questions I can ask from the dataset. And several have
 already been looked at in [Alex Cookson’s blog
 post](https://www.alexcookson.com/post/analyzing-himalayan-peaks-first-ascents/).
 
-### What is the primary cause of injury in climbers?
-
-Note: there’s an issue here. The number of injuries showing up on the
-plot is far less than what shows up when I use the count function.
-Unclear what is going on.
+### What are the most common injuries in climbers?
 
 ``` r
-# creating a vector with peak names that is in descending order by the number of injuries at each peak
+# creating a dataframe with peak names that is sorted by the number of injuries at each peak
 
-members_injury_count <- count(members %>% 
-        filter(injured == TRUE), 
-      vars = peak_name) %>% 
-  arrange(desc(n))
+members_injury_count <- count(members %>%
+  filter(injured == TRUE),
+vars = peak_name
+) %>%
+  arrange(n)
 
-# creating a plot that shows the types of injuries at the top 10 peaks for injuries 
+# creating a dataframe that shows the types of injuries at the top 10 peaks for injuries
 
-ggplot(members %>% 
-         filter(injured == TRUE) %>%  # filter for injuries 
-         mutate(peak_name = factor(peak_name, levels = members_injury_count$vars, ordered = TRUE)) %>%  # mutate peak_name into a factor
-         filter(peak_name == members_injury_count$vars[1:10])) + # filter for only entries that contain the one of the top 10 injury peak names
-  geom_bar(aes(x = peak_name, fill = injury_type)) + # will fill the bars in by the type of injury
-  scale_fill_viridis(option = "inferno", discrete = TRUE) + 
-  coord_flip() + 
-  labs( fill = "Injury Type", 
-        title = "Types of Injuries Endured During Himalayan Climbing Expeditions",
-        subtitle = "Limited to the top 10 peaks with the most injuries.",
-        caption = "Source: The Himalayan Database \n Viz: @ashgjoh") + 
-  xlab("Peak") + 
+members_injuries <- members %>%
+  filter(injured == TRUE) %>% # filter for injuries
+  mutate(peak_name = factor(peak_name, levels = members_injury_count$vars, ordered = TRUE)) %>% # change peak_name variable into a factor
+  filter(peak_name %in% tail(members_injury_count$vars, 10)) %>% # filter for top 10 peaks with the most recorded injuries
+  select(c(peak_name, injured, injury_type)) %>% # pulling only the columns that I'll need for my visualization
+  drop_na() # removing the one na value because not useful for the question we're asking
+
+# making the graph!
+
+ggplot(members_injuries) +
+  geom_bar(aes(
+    x = peak_name,
+    fill = injury_type
+  )) + # will fill the bars in by the type of injury
+  scale_fill_brewer(palette = "Set3") +
+  coord_flip() +
+  labs(
+    fill = "Injury Type",
+    title = "Types of Injuries Endured During Himalayan Climbing Expeditions",
+    subtitle = "Limited to the top 10 peaks with the most injuries.",
+    caption = "Source: The Himalayan Database \n Viz: @ashgjoh"
+  ) +
+  xlab("Peak") +
   ylab("# of Injuries") +
-  theme_classic() + 
-  theme(plot.title = element_text(size = 20, face = "bold"), 
-        plot.subtitle = element_text(size = 18),
-        axis.title.x = element_text(size = 15, face = "bold"), 
-        axis.title.y = element_text(size = 15, face = "bold"), 
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12), 
-        legend.title = element_text(size = 15), 
-        legend.text = element_text(size = 12, face = "bold"),
-        plot.caption = element_text(size = 14, face = "bold"),
-        legend.position = "top")
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 30, face = "bold"),
+    plot.subtitle = element_text(size = 20),
+    axis.title.x = element_text(size = 25, face = "bold"),
+    axis.title.y = element_text(size = 25, face = "bold"),
+    axis.text.x = element_text(size = 16, face = "bold"),
+    axis.text.y = element_text(size = 16, face = "bold"),
+    legend.title = element_text(size = 20, face = "bold"),
+    legend.text = element_text(size = 18, face = "bold"),
+    plot.caption = element_text(size = 17, face = "bold"),
+    legend.position = c(0.8, 0.4),
+    legend.key.size = unit(30, "pt")
+  )
 ```
-
-    ## Warning in `==.default`(peak_name, members_injury_count$vars[1:10]): longer
-    ## object length is not a multiple of shorter object length
-
-    ## Warning in is.na(e1) | is.na(e2): longer object length is not a multiple of
-    ## shorter object length
 
 ![](200922_tidytuesday_files/figure-gfm/injury%20figure-1.png)<!-- -->
