@@ -38,7 +38,7 @@ There are so many questions I can ask from the dataset. And several have already
 
 members_injury_count <- count(members %>%
   filter(injured == TRUE),
-vars = peak_name
+peak_name
 ) %>%
   arrange(n)
 
@@ -46,8 +46,8 @@ vars = peak_name
 
 members_injuries <- members %>%
   filter(injured == TRUE) %>% # filter for injuries
-  mutate(peak_name = factor(peak_name, levels = members_injury_count$vars, ordered = TRUE)) %>% # change peak_name variable into a factor
-  filter(peak_name %in% tail(members_injury_count$vars, 10)) %>% # filter for top 10 peaks with the most recorded injuries
+  mutate(peak_name = factor(peak_name, levels = members_injury_count$peak_name, ordered = TRUE)) %>% # change peak_name variable into a factor
+  filter(peak_name %in% tail(members_injury_count$peak_name, 10)) %>% # filter for top 10 peaks with the most recorded injuries
   select(c(peak_name, injured, injury_type)) %>% # pulling only the columns that I'll need for my visualization
   drop_na() # removing the one na value because not useful for the question we're asking
 
