@@ -48,31 +48,21 @@ sessionInfo()
 
 ### Importing the data
 
+The data this week is about Women’s NCAA basketball tournaments. So by
+nature, each entry is a team that made it to the tournament that year.
+
 ``` r
 tuesdata <- tidytuesdayR::tt_load(2020, week = 41)
 ```
 
-    ## Only 4 Github queries remaining until 2020-10-12 04:55:03 PM EDT.
-    ## Only 4 Github queries remaining until 2020-10-12 04:55:03 PM EDT.
-    ## Only 4 Github queries remaining until 2020-10-12 04:55:03 PM EDT.
-    ## Only 4 Github queries remaining until 2020-10-12 04:55:03 PM EDT.
-    ## Only 4 Github queries remaining until 2020-10-12 04:55:03 PM EDT.
-
     ## --- Compiling #TidyTuesday Information for 2020-10-06 ----
-
-    ## Only 3 Github queries remaining until 2020-10-12 04:55:04 PM EDT.
 
     ## --- There is 1 file available ---
 
-    ## Only 2 Github queries remaining until 2020-10-12 04:55:04 PM EDT.
-
     ## --- Starting Download ---
 
-    ## Only 2 Github queries remaining until 2020-10-12 04:55:04 PM EDT.
-
+    ## 
     ##  Downloading file 1 of 1: `tournament.csv`
-
-    ## Only 1 Github queries remaining until 2020-10-12 04:55:04 PM EDT.
 
     ## --- Download complete ---
 
