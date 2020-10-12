@@ -1,0 +1,191 @@
+---
+title: 'Tidy Tuesday: 10/6/20 - NCAA Women''s Basketball Tournament'
+author: "Ashlyn Johnson"
+date: "10/12/2020"
+output: github_document
+---
+
+```{r loading libraries, message = FALSE}
+library(tidyverse)
+library(tidytuesdayR)
+library(knitr)
+sessionInfo()
+```
+
+### Importing the data
+
+```{r getting the data}
+tuesdata <- tidytuesdayR::tt_load(2020, week = 41)
+
+tournament <- tuesdata$tournament
+```
+
+### Narrowing the data down
+
+I'm not quite sure what I want to do with these data yet. But I do know that I want to focus on 'Tobacco Road' schools, so North Carolina, NC State, Duke, and Wake Forest. However, just a quick look at the data shows me that Wake Forest only made it into the tournament once. So instead, I'll focus on 'Triangle Teams'.
+
+```{r filtering to only triangle teams}
+triangle_tournament <- tournament %>%
+  filter(school == "North Carolina" | school == "NC State" | school == "Duke")
+```
+
+### The Plot!
+
+I've decided to make a graph with percentage of wins by year for each team. These wins include conference and tournament wins. Unfortunately, if the team didn't make the tournament that year, then there is no information how how many conference wins they had.
+
+```{r initial plot, fig.height = 6, fig.width = 10}
+ggplot(data = triangle_tournament, aes(x = year, y = full_percent)) +
+  geom_point(aes(color = school), size = 2) +
+  geom_line(aes(color = school), size = 1) +
+  scale_color_manual(values = c("#00009c", "#CC0000", "#7BAFD4")) + # these hex codes are specific for each school's colors
+  scale_y_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100),
+                     limits = c(0, 100)) +
+  scale_x_continuous(
+    breaks = c(1982, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2018),
+    limits = c(1982, 2018)
+  ) +
+  theme_classic() +
+  labs(
+    title = "Triangle Basketball",
+    subtitle = "% of wins (regular + tournament) for teams that made the NCAA tournament that year",
+    y = "% of total wins",
+    x = "Tournament Year"
+  ) +
+  theme(
+    plot.subtitle = element_text(size = 14,
+                                 colour = "black"),
+    plot.caption = element_text(
+      size = 11,
+      face = "bold",
+      colour = "black"
+    ),
+    axis.line = element_line(linetype = "solid"),
+    axis.ticks = element_line(colour = "black"),
+    panel.grid.major = element_line(linetype = "blank"),
+    panel.grid.minor = element_line(linetype = "blank"),
+    axis.title = element_text(size = 14,
+                              face = "bold"),
+    axis.text = element_text(size = 12,
+                             colour = "black"),
+    plot.title = element_text(size = 15,
+                              face = "bold"),
+  ) +
+  labs(caption = "data: FiveThirtyEight \n viz: @ashgjoh") +
+  theme(
+    legend.text = element_text(size = 10,
+                               face = "bold"),
+    legend.position = "bottom",
+    legend.direction = "horizontal"
+  ) +
+  theme(legend.title = element_text(face = "bold")) +
+  labs(colour = "School") +
+  theme(
+    panel.background = element_rect(fill = "gray95"),
+    plot.background = element_rect(fill = "gray95"),
+    legend.key = element_rect(fill = "gray95"),
+    legend.background = element_rect(fill = "gray95")
+  ) 
+```
+An initial look at this plot shows that the Duke team had a very low % of total wins in 2005. This seemed really unusual because all of the teams in this dataset made the NCAA tournament. It's possible that they won the ACC tournament that year which could be why they were able to make 'the Big Dance' with such a low percentage of total wins. But either way, it warranted looking at the data a little closer. 
+
+If I look at the entry for the Duke team in the year of 2005, I get this: 
+```{r Duke 2005}
+triangle_tournament %>% 
+  filter(school == "Duke", year == 2005) %>% 
+  kable()
+```
+
+Looking at this entry, I can see an error. The total losses, which is calculated by adding regular season losses and tournament losses, is listed as 53. However, Duke only had 4 regular season losses and 1 tournament loss that year, so the number should be 5. 
+
+So let's recalculate the `full_percent` value for the 2005 Duke Team. 
+
+```{r Duke 2005 percent win recalculation}
+duke_2005_total_wins <- triangle_tournament %>%
+  filter(school == "Duke", year == "2005") %>%
+  select(reg_w, tourney_w) %>%
+  sum()
+
+duke_2005_total_losses <- triangle_tournament %>%
+  filter(school == "Duke", year == "2005") %>%
+  select(reg_l, tourney_l) %>%
+  sum()
+
+duke_2005_full_percent <-
+  duke_2005_total_wins / sum(duke_2005_total_losses, duke_2005_total_wins)
+
+paste0(
+  "The percentage of total wins for the Duke 2005 team is ",
+  round(duke_2005_full_percent * 100, digits = 1),
+  "%"
+)
+```
+
+So, now I'm a little afraid that there might be errors other places. So, to get around that, I will recalculate the `full_w`, `full_l`, and `full_percent` columns and then replot my graph.
+
+```{r recalculating the above variables}
+
+triangle_tournament_2 <- triangle_tournament %>%
+  mutate(
+    full_w = reg_w + tourney_w,
+    full_l = reg_l + tourney_l,
+    full_percent = round((full_w / (full_w + full_l)) * 100, digits = 1)
+  ) 
+
+```
+
+So now I'll remake the plot. 
+
+```{r final plot, fig.height = 5, fig.width = 10}
+ggplot(data = triangle_tournament_2, aes(x = year, y = full_percent)) +
+  geom_point(aes(color = school), size = 2) +
+  geom_line(aes(color = school), size = 1) +
+  scale_color_manual(values = c("#00009c", "#CC0000", "#7BAFD4")) + # these hex codes are specific for each school's colors
+  scale_y_continuous(breaks = c(50, 60, 70, 80, 90, 100),
+                     limits = c(50, 100)) +
+  scale_x_continuous(
+    breaks = c(1983, 1988, 1993, 1998, 2003, 2008, 2013, 2018),
+    limits = c(1982, 2018)
+  ) +
+  theme_classic() +
+  labs(
+    title = "Triangle Basketball",
+    subtitle = "% of wins (regular + tournament) for teams that made the NCAA tournament that year",
+    y = "% of total wins",
+    x = "Tournament Year"
+  ) +
+  theme(
+    plot.subtitle = element_text(size = 14,
+                                 colour = "black"),
+    plot.caption = element_text(
+      size = 11,
+      face = "bold",
+      colour = "black"
+    ),
+    axis.line = element_line(linetype = "solid"),
+    axis.ticks = element_line(colour = "black"),
+    panel.grid.major = element_line(linetype = "blank"),
+    panel.grid.minor = element_line(linetype = "blank"),
+    axis.title = element_text(size = 14,
+                              face = "bold"),
+    axis.text = element_text(size = 12,
+                             colour = "black"),
+    plot.title = element_text(size = 15,
+                              face = "bold"),
+  ) +
+  labs(caption = "data: FiveThirtyEight \n viz: @ashgjoh") +
+  theme(
+    legend.text = element_text(size = 10,
+                               face = "bold"),
+    legend.position = "bottom",
+    legend.direction = "horizontal"
+  ) +
+  theme(legend.title = element_text(face = "bold")) +
+  labs(colour = "School") +
+  theme(
+    panel.background = element_rect(fill = "gray95"),
+    plot.background = element_rect(fill = "gray95"),
+    legend.key = element_rect(fill = "gray95"),
+    legend.background = element_rect(fill = "gray95")
+  ) 
+```
+
