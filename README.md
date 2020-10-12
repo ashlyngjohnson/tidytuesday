@@ -1,4 +1,4 @@
-# tidytuesday
+# Tidy Tuesday
 Tidy Tuesday is a weekly data project in R. Here are my attempts at wrangling and visualizing the various datasets. Click on the week to find the code for each plot as well as other plots generated with that week's dataset. 
 
 ## 2020
@@ -8,3 +8,6 @@ Tidy Tuesday is a weekly data project in R. Here are my attempts at wrangling an
 
 ### [Week 39](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week39/200922_tidytuesday.md)
 ![alt text](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week39/200922_tidytuesday_files/figure-gfm/injury%20figure-1.png)
+
+### [Week 41](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week41/201006_tidytuesday.md)
+![alt text](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week41/201006_tidytuesday_files/figure-gfm/final%20plot-1.png)
