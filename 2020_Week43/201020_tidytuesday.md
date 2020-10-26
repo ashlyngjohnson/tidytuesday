@@ -1,11 +1,9 @@
----
-title: 'Tidy Tuesday: 10/20/20 - Great American Beer Festival'
-author: "Ashlyn Johnson"
-date: "10/26/2020"
-output: github_document
----
+Tidy Tuesday: 10/20/20 - Great American Beer Festival
+================
+Ashlyn Johnson
+10/26/2020
 
-```{r, message = FALSE}
+``` r
 library(tidyverse)
 library(tidytuesdayR) 
 library(flextable)
@@ -13,23 +11,30 @@ library(officer)
 library(webshot2)
 ```
 
-This week's Tidy Tuesday data comes from the Great American Beer Festival (GABF). There are many different categories of beers and within each category a bronze, silver, or gold medal can be awarded. 
-
+This week’s Tidy Tuesday data comes from the Great American Beer
+Festival (GABF). There are many different categories of beers and within
+each category a bronze, silver, or gold medal can be awarded.
 
 ### Getting the Data
-```{r, message = FALSE}
-tuesdata <- tidytuesdayR::tt_load(2020, week = 43)
 
+``` r
+tuesdata <- tidytuesdayR::tt_load(2020, week = 43)
+```
+
+    ## 
+    ##  Downloading file 1 of 1: `beer_awards.csv`
+
+``` r
 beer_awards <- tuesdata$beer_awards
 ```
 
 ### Exploration using a table
 
-Being that I live in Georgia currently, I am interested to know how successful Georgia beers have been in the GABF. First, I'll use the `flextable` package to make a table of the winning Georgia beers. 
+Being that I live in Georgia currently, I am interested to know how
+successful Georgia beers have been in the GABF. First, I’ll use the
+`flextable` package to make a table of the winning Georgia beers.
 
-```{r}
-
-
+``` r
 ga_beer_table <- beer_awards %>%
   filter(state == "GA") %>%
   select(-state) %>%
@@ -59,7 +64,10 @@ ga_beer_table <- beer_awards %>%
   fontsize(j = c("Beer", "Category", "Year"), size = 12) 
   
 plot(ga_beer_table)
-  
-  
 ```
 
+    ## Registered S3 method overwritten by 'webshot':
+    ##   method        from    
+    ##   print.webshot webshot2
+
+![](201020_tidytuesday_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
