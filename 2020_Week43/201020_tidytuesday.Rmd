@@ -5,26 +5,55 @@ date: "10/26/2020"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, message = FALSE}
+library(tidyverse)
+library(tidytuesdayR) 
+library(flextable)
+library(officer)
 ```
 
-## R Markdown
+This week's Tidy Tuesday data comes from the Great American Beer Festival (GABF). There are many different categories of beers and within each category a bronze, silver, or gold medal can be awarded. 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+### Getting the Data
+```{r}
+tuesdata <- tidytuesdayR::tt_load(2020, week = 43)
 
-```{r cars}
-summary(cars)
+beer_awards <- tuesdata$beer_awards
 ```
 
-## Including Plots
+### Exploration using a table
 
-You can also embed plots, for example:
+Being that I live in Georgia currently, I am interested to know how successful Georgia beers have been in the GABF. First, I'll use the `flextable` package to make a table of the winning Georgia beers. 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+
+
+beer_awards %>% 
+  filter(state == "GA") %>% 
+  select(-state) %>% 
+  mutate(medal = factor(medal, levels = c("Bronze", "Silver", "Gold"))) %>%
+  arrange(medal, city, brewery, year) %>% 
+  rename(Medal = medal, 
+         City = city, 
+         Brewery = brewery, 
+         Beer = beer_name, 
+         Category = category, 
+         Year = year) %>% 
+  as_grouped_data(groups = c("Medal", "City", "Brewery")) %>% 
+  flextable() %>% 
+  colformat_char(j = "Year", na_str = "") %>% 
+  bg(i = ~ Medal == "Bronze", bg = "#d0700e") %>% 
+  bg(i = ~ Medal == "Silver", bg = "darkgray") %>% 
+  bg(i = ~ Medal == "Gold", bg = "gold") %>% 
+  bold(part = "header") %>% 
+  bold(j = c("Medal", "City", "Brewery")) %>% 
+  fontsize(size = 15, part = "header") %>% 
+  fontsize(i = ~ Medal %in% c("Bronze", "Silver", "Gold"), size = 14) %>% 
+  autofit()
+  
+  
+  
+  
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
