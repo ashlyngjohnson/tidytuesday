@@ -95,5 +95,6 @@ save_as_image(ga_beer_awards_table, path =  "C:/Users/ashly/OneDrive - Emory Uni
     ## [1] "C:/Users/ashly/OneDrive - Emory University/Documents/r_projects_personal/tidytuesday/2020_Week43/ga_beer_awards_table.png"
 
 ![*Data comes from the Great American Beer
-Festival.*](C:/Users/ashly/OneDrive%20-%20Emory%20University/Documents/r_projects_personal/tidytuesday/2020_Week43/ga_beer_awards_table.png)
-\#\#\# Plotting Award Winning Breweries in Georgia
+Festival.*](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week43/ga_beer_awards_table.png)
+
+### Plotting Award Winning Breweries in Georgia
