@@ -82,7 +82,7 @@ save_as_image(ga_beer_awards_table, path =  "C:/Users/ashly/OneDrive - Emory Uni
 ```
 
 
-![*Data comes from the Great American Beer Festival.*](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week43/ga_beer_awards_table.png){width=50%, height=50%}
+![*Data comes from the Great American Beer Festival.*](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week43/ga_beer_awards_table.png){width=50%}
 
 ### Plotting Award Winning Breweries in Georgia
 
