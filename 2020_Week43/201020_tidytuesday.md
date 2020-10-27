@@ -158,3 +158,6 @@ save_as_image(ga_beer_awards_gold_table, path =  "C:/Users/ashly/OneDrive - Emor
 ```
 
     ## [1] "C:/Users/ashly/OneDrive - Emory University/Documents/r_projects_personal/tidytuesday/2020_Week43/ga_beer_awards_gold_table.png"
+
+![*Data comes from the Great American Beer
+Festival.*](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week43/ga_beer_awards_gold_table.png)
