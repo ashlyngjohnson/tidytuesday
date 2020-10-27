@@ -40,7 +40,8 @@ successful Georgia beers have been in the GABF. First, I’ll use the
 ga_beer_awards <- beer_awards %>%
   filter(state == "GA") %>%
   select(-state) %>%
-  mutate(medal = factor(medal, levels = c("Bronze", "Silver", "Gold"))) %>%
+  mutate(medal = factor(medal, levels = c("Bronze", "Silver", "Gold")), 
+         brewery = str_replace(brewery, pattern = "Sweetwater Brewing Co.", replacement = "SweetWater Brewing Co.")) %>%
   arrange(medal, city, brewery, year) %>%
   rename(
     Medal = medal,
@@ -49,7 +50,7 @@ ga_beer_awards <- beer_awards %>%
     Beer = beer_name,
     Category = category,
     Year = year
-  )
+  ) 
 
 # getting some useful vectors for specifying rows for conditional formatting
 
@@ -97,4 +98,63 @@ save_as_image(ga_beer_awards_table, path =  "C:/Users/ashly/OneDrive - Emory Uni
 ![*Data comes from the Great American Beer
 Festival.*](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week43/ga_beer_awards_table.png)
 
-### Plotting Award Winning Breweries in Georgia
+### Making Final Tidy Tuesday Image
+
+For time’s sake, I’m just going to generate a short table with just the
+gold medal winning beers.
+
+``` r
+# cleaning up the dataframe a bit and filtering for GA breweries
+
+ga_beer_awards_gold <- beer_awards %>%
+  filter(state == "GA", 
+         medal == "Gold") %>%
+  select(-state, -medal) %>%
+  mutate(brewery = str_replace(brewery, pattern = "Sweetwater Brewing Co.", replacement = "SweetWater Brewing Co.")) %>%
+  arrange(city, brewery, year) %>%
+  rename(
+    City = city,
+    Brewery = brewery,
+    Beer = beer_name,
+    Category = category,
+    Year = year
+  ) 
+
+# getting some useful vectors for specifying rows for conditional formatting
+
+ga_beer_awards_cities_gold <- ga_beer_awards$City %>% unique()
+ga_beer_awards_breweries_gold <- ga_beer_awards$Brewery %>% unique()
+
+# making the "gold" table 
+
+ga_beer_awards_gold_table <- ga_beer_awards_gold %>%
+  as_grouped_data(groups = c("City", "Brewery")) %>%
+  flextable() %>%
+  colformat_char(j = "Year", na_str = "") %>%
+  bg(j = "Beer", bg = "skyblue2") %>%
+  bg(j = "Category", bg = "skyblue3") %>%
+  bg(j = "Year", bg = "skyblue4") %>%
+  bg(i = ~ City %in% ga_beer_awards_cities, bg = "gray60") %>%
+  bg(i = ~ Brewery %in% ga_beer_awards_breweries,
+     bg = "gray88") %>%
+  bold(part = "body") %>%
+  fontsize(size = 16, part = "header") %>%
+  fontsize(j = "City", size = 14) %>%
+  fontsize(j = "Brewery", size = 13) %>%
+  fontsize(j = c("Beer", "Category", "Year"), size = 12) %>% 
+  add_header_row(values = "Gold Medal Beers in Georgia", colwidths = 5) %>%
+  bg(part = "header", bg = "gold") %>% 
+  fontsize(i = 1, size = 20, part = "header") %>% 
+  align(align = "center", part = "header") %>% 
+  bold(part = "header") %>% 
+  add_footer_row(values = "Viz: @ashgjoh", colwidths = 5) %>% 
+  add_footer_row(values = "Source: Great American Beer Festival", colwidths = 5) %>% 
+  align(align = "right", part = "footer") %>% 
+  fontsize(part = "footer", size = 11) 
+
+# saving as image
+
+save_as_image(ga_beer_awards_gold_table, path =  "C:/Users/ashly/OneDrive - Emory University/Documents/r_projects_personal/tidytuesday/2020_Week43/ga_beer_awards_gold_table.png")
+```
+
+    ## [1] "C:/Users/ashly/OneDrive - Emory University/Documents/r_projects_personal/tidytuesday/2020_Week43/ga_beer_awards_gold_table.png"
