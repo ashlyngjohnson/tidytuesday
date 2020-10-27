@@ -134,8 +134,9 @@ ga_beer_awards_gold_table <- ga_beer_awards_gold %>%
   bg(j = "Beer", bg = "skyblue2") %>%
   bg(j = "Category", bg = "skyblue3") %>%
   bg(j = "Year", bg = "skyblue4") %>%
-  bg(i = ~ City %in% ga_beer_awards_cities, bg = "gray60") %>%
-  bg(i = ~ Brewery %in% ga_beer_awards_breweries,
+  bg(j = c("City", "Brewery"), bg = "white") %>% 
+  bg(i = ~ City %in% ga_beer_awards_cities_gold, bg = "gray60") %>%
+  bg(i = ~ Brewery %in% ga_beer_awards_breweries_gold,
      bg = "gray88") %>%
   bold(part = "body") %>%
   fontsize(size = 16, part = "header") %>%
@@ -150,7 +151,8 @@ ga_beer_awards_gold_table <- ga_beer_awards_gold %>%
   add_footer_row(values = "Viz: @ashgjoh", colwidths = 5) %>% 
   add_footer_row(values = "Source: Great American Beer Festival", colwidths = 5) %>% 
   align(align = "right", part = "footer") %>% 
-  fontsize(part = "footer", size = 11) 
+  fontsize(part = "footer", size = 11) %>% 
+  bg(part = "footer", bg = "white")
 
 # saving as image
 
