@@ -15,3 +15,7 @@ Tidy Tuesday is a weekly data project in R. Here are my attempts at wrangling an
 ### [Week 43](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week43/201020_tidytuesday.md)
 <img src="https://github.com/ashlyngjohnson/tidytuesday/blob/master/2020_Week43/ga_beer_awards_gold_table.png" width="500" height="750"/>
 
+## 2021 
+
+### [Week 22](https://github.com/ashlyngjohnson/tidytuesday/blob/master/2021_Week22/210525_tidytuesday.md)
+<img src = "https://github.com/ashlyngjohnson/tidytuesday/blob/master/2021_Week22/210525_tidytuesday_files/figure-gfm/unnamed-chunk-3-1.png">
