@@ -1,0 +1,51 @@
+---
+title: 'Tidy Tuesday: 5/26/21 - Mario Kart 64 World Records'
+author: "Ashlyn Johnson"
+date: "5/26/2021"
+output: github_document
+---
+
+```{r setup, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(tidytuesdayR)
+library(ggdark)
+```
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load(2021, week = 22)
+
+records <- tuesdata$records
+```
+
+On which track does a shortcut save the most time? 
+
+First, let's get the current records for each track, with and without a shortcut.I determined the current record by isolating the minimum time for each track. 
+
+```{r}
+
+records_shortcut_comparison <- records %>% 
+  filter(type == "Three Lap") %>% 
+  group_by(track, shortcut) %>% 
+  summarize(current_record = min(time)) %>% 
+  mutate(shortcut = factor(shortcut, levels = c("Yes", "No")))
+
+records_shortcut_comparison
+
+```
+
+Let's make a graph!
+
+```{r}
+ggplot(records_shortcut_comparison, aes(y = track, x = current_record)) + 
+  geom_line() + 
+  geom_point(aes(color = shortcut), size = 2) + 
+  scale_color_manual(values = c("#08469E","#C2352D")) +
+  labs(x = "Time (seconds)", y = "", title = "Impact of a shortcut on Mario Kart 64 World Records", color = "Shortcut?") +
+  dark_theme_classic()
+
+```
+
+
+
+
+
